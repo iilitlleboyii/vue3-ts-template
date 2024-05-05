@@ -1,0 +1,61 @@
+import { login, getUserInfo } from '@/api/common'
+import { storageKeys, getItem, setItem, removeItem } from '@/utils/auth'
+
+export const useUserStore = defineStore('userStore', {
+  state: () => {
+    return {
+      access: getItem(storageKeys.access),
+      refresh: getItem(storageKeys.refresh),
+      permissions: JSON.parse(getItem(storageKeys.permissions)!),
+      roles: JSON.parse(getItem(storageKeys.roles)!),
+      userInfo: JSON.parse(getItem(storageKeys.userInfo)!)
+    }
+  },
+  actions: {
+    Login(data: any) {
+      return new Promise((resolve, reject) => {
+        login(data)
+          .then((res) => {
+            const { access, refresh, permissions, roles, userInfo } = res.data
+            setItem(storageKeys.access, access)
+            setItem(storageKeys.refresh, refresh)
+
+            setItem(storageKeys.permissions, permissions)
+            setItem(storageKeys.roles, roles)
+            setItem(storageKeys.userInfo, userInfo)
+            resolve(void 0)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    GetUserInfo() {
+      return new Promise((resolve, reject) => {
+        getUserInfo()
+          .then((res) => {
+            const { permissions, roles, userInfo } = res.data
+            setItem(storageKeys.permissions, permissions)
+            setItem(storageKeys.roles, roles)
+            setItem(storageKeys.userInfo, userInfo)
+            resolve(void 0)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    Logout() {
+      return new Promise((resolve, reject) => {
+        removeItem(storageKeys.access)
+        removeItem(storageKeys.refresh)
+        removeItem(storageKeys.permissions)
+        removeItem(storageKeys.roles)
+        removeItem(storageKeys.userInfo)
+        resolve(void 0)
+      })
+    }
+  },
+  getters: {},
+  persist: false
+})

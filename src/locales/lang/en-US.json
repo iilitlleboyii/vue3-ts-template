@@ -1,0 +1,50 @@
+{
+  "hello": "Hello World!",
+  "layout": {
+    "backend": "Backend System",
+    "routes": {
+      "home": "Home",
+      "system": "System",
+      "user": "User",
+      "role": "Role",
+      "menu": "Menu",
+      "log": "Log",
+      "dataPanel": "Data Panel",
+      "login": "Login",
+      "register": "Register"
+    },
+    "tab": {
+      "refresh": "Refresh Current",
+      "others": "Close Others",
+      "left": "Close Left",
+      "right": "Close Right",
+      "all": "Close All"
+    },
+    "avatar": {
+      "profile": "Profile",
+      "theme": "Theme",
+      "logout": "Logout",
+      "dialog": {
+        "remainder": "Remainder",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "content": "Are you sure you want to log out? Remember to save the important data first!"
+      },
+      "messages": {
+        "fail": "load avatar fail",
+        "success": "Logout successfully"
+      }
+    }
+  },
+  "components": {
+    "searchbar": {
+      "search": "Search",
+      "reset": "Reset",
+      "expand": "Expand",
+      "collapse": "Collapse"
+    },
+    "treeselector": {
+      "placeholder": "Please input keyword"
+    }
+  }
+}
