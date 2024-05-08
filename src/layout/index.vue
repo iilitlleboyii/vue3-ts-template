@@ -3,7 +3,13 @@
     <el-aside :width="isCollapse ? '64px' : '200px'">
       <LogoTitle :is-collapse="isCollapse" icon-name="home" :title="$t('layout.backend')"></LogoTitle>
       <el-scrollbar>
-        <el-menu :unique-opened="true" :default-active="$route.path" :collapse="isCollapse" :collapse-transition="false" class="h-full select-none">
+        <el-menu
+          :unique-opened="true"
+          :default-active="$route.path"
+          :collapse="isCollapse"
+          :collapse-transition="false"
+          class="h-full select-none"
+        >
           <MenuItem v-for="item in menuItems" :key="item.path" :item="item"></MenuItem>
         </el-menu>
       </el-scrollbar>
@@ -70,6 +76,7 @@ function filterHidden(arr) {
 <style lang="scss" scoped>
 :deep(.el-aside .el-scrollbar) {
   height: calc(100vh - 50px);
+  background-color: var(--el-menu-bg-color);
 
   .el-scrollbar__view {
     height: 100%;
