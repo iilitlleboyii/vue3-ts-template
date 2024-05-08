@@ -36,7 +36,7 @@
       <el-tab-pane v-for="item in source" :label="item.name" :name="item.name"></el-tab-pane>
     </el-tabs>
     <el-scrollbar>
-      <div ref="ContentRef" v-html="html" style="display: flex"></div>
+      <div ref="ContentRef" v-html="html" style="display: flex; width: max-content"></div>
     </el-scrollbar>
   </div>
 </template>
@@ -171,11 +171,16 @@ onMounted(() => {
 })
 
 function setCssVarToParent() {
-  if (!ContentRef.value || !CodeContainerRef.value || !ContentRef.value.getElementsByTagName('pre')[0]) return
+  const preElement = ContentRef.value?.getElementsByTagName('pre')[0]
+  const lineNumbersWrapper = ContentRef.value?.getElementsByClassName('line-numbers-wrapper')[0]
+  if (!CodeContainerRef.value || !preElement) return
   const vars = ['--shiki-light-bg', '--shiki-dark-bg', '--shiki-light', '--shiki-dark']
   for (const varName of vars) {
-    const value = getCssVar(ContentRef.value.getElementsByTagName('pre')[0], varName)
+    const value = getCssVar(preElement, varName)
     applyCssVarToParent(CodeContainerRef.value, varName, value)
+    if (props.lineNums) {
+      applyCssVarToParent(lineNumbersWrapper, varName, value)
+    }
   }
   function getCssVar(el, varName) {
     return el.style.getPropertyValue(varName)
@@ -267,6 +272,10 @@ function lineNumberPlugin(md, enable = false) {
     box-shadow: none;
   }
 
+  :deep(.el-tabs__nav-wrap) {
+    margin-bottom: 0;
+  }
+
   :deep(.el-scrollbar) {
     width: calc(100% + 12px);
     height: calc(100% - 28px);
@@ -314,7 +323,7 @@ function lineNumberPlugin(md, enable = false) {
   user-select: none;
   opacity: 1;
   transition: opacity 300ms;
-  z-index: 2;
+  z-index: 1;
 }
 
 .copied-btns {
@@ -364,6 +373,9 @@ function lineNumberPlugin(md, enable = false) {
   border-right: 2px solid;
   text-align: center;
   margin-right: 1em;
+  position: sticky;
+  left: 0;
+  z-index: 1;
 
   .line-number {
     color: #8e8e92;
@@ -457,5 +469,13 @@ function lineNumberPlugin(md, enable = false) {
 }
 [data-theme='dark'] .shiki::-webkit-scrollbar-thumb {
   background-color: #9f9f9f;
+}
+
+/* 设置行号深浅色主题颜色 */
+[data-theme='light'] .line-numbers-wrapper {
+  background-color: var(--shiki-light-bg) !important;
+}
+[data-theme='dark'] .line-numbers-wrapper {
+  background-color: var(--shiki-dark-bg) !important;
 }
 </style>
