@@ -5,7 +5,7 @@
         <el-button @click="handleDownload">下载文件</el-button>
         <el-button @click="handleExport">导出表格</el-button>
       </div>
-      <AsyncTag style="width: 600px">
+      <AsyncTag style="width: 600px; height: 400px">
         <CodeContainer :source="source" :theme="theme" lineNums></CodeContainer>
       </AsyncTag>
     </div>
@@ -26,12 +26,10 @@ const theme = computed(() => (dark.value ? 'dark' : 'light'))
 const source = ref([
   {
     name: 'vue.vue',
-    lang: 'vue',
     code: vues
   },
   {
     name: 'java.java',
-    lang: 'java',
     code: javas
   }
 ])

@@ -31,16 +31,18 @@
         </div>
       </template>
     </div>
-    <div class="code-lang">{{ activeName }}</div>
+    <div class="code-lang">{{ lang }}</div>
     <el-tabs v-model="activeName" @tab-click="handleClickTab" :class="lineNums ? 'line-numbers-mode' : ''">
-      <el-tab-pane v-for="item in source" :label="item.name" :name="item.lang"></el-tab-pane>
+      <el-tab-pane v-for="item in source" :label="item.name" :name="item.name"></el-tab-pane>
     </el-tabs>
-    <div ref="ContentRef" v-html="html" style="display: flex"></div>
+    <el-scrollbar>
+      <div ref="ContentRef" v-html="html" style="display: flex"></div>
+    </el-scrollbar>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect, nextTick, onMounted } from 'vue'
+import { ref, watchEffect, nextTick, onMounted, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 /* 全量捆绑 */
 import { bundledLanguages, bundledThemes, getHighlighter } from 'shiki'
@@ -55,9 +57,8 @@ const props = defineProps({
   /**
    * 数据源
    *
-   * @type {Array<{name: string, lang: string, code: string}>}
+   * @type {Array<{name: string, code: string}>}
    * @description name 文件名
-   * @description lang 语言
    * @description code 代码内容
    */
   source: {
@@ -91,6 +92,8 @@ const CodeContainerRef = ref(null)
 const ContentRef = ref(null)
 
 const activeName = ref('')
+
+const lang = computed(() => activeName.value?.split('.').pop() || '')
 
 function handleClickTab() {
   nextTick(() => {
@@ -154,10 +157,10 @@ const html = ref('')
 
 watchEffect(() => {
   if (props.source instanceof Array && props.source.length > 0) {
-    !activeName.value && (activeName.value = props.source[0].lang)
+    !activeName.value && (activeName.value = props.source[0].name)
     setThemeToBody(activeName.value)
-    content.value = props.source.find((item) => item.lang === activeName.value)?.code || ''
-    html.value = md.render(addStringToFirstAndLastLine(content.value, activeName.value))
+    content.value = props.source.find((item) => item.name === activeName.value)?.code || ''
+    html.value = md.render(addStringToFirstAndLastLine(content.value, lang.value))
   }
 })
 
@@ -256,12 +259,22 @@ function lineNumberPlugin(md, enable = false) {
   border-radius: 0.5em;
   position: relative;
   width: 100%;
-  min-height: 100%;
+  height: 100%;
   overflow: hidden;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 
   :deep(.el-tabs__item) {
     box-shadow: none;
+  }
+
+  :deep(.el-scrollbar) {
+    width: calc(100% + 12px);
+    height: calc(100% - 28px);
+
+    .el-scrollbar__wrap {
+      width: calc(100% - 12px);
+      height: calc(100% - 12px);
+    }
   }
 }
 
@@ -301,6 +314,7 @@ function lineNumberPlugin(md, enable = false) {
   user-select: none;
   opacity: 1;
   transition: opacity 300ms;
+  z-index: 2;
 }
 
 .copied-btns {
@@ -338,20 +352,7 @@ function lineNumberPlugin(md, enable = false) {
 
 .shiki {
   padding: 0.5em;
-  overflow: auto;
   outline: none;
-
-  &::-webkit-scrollbar {
-    height: 8px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: #0003;
-    border-radius: 10px;
-    transition: opacity 250ms;
-  }
-  &::-webkit-scrollbar-track {
-    height: 12px;
-  }
 
   code {
     line-height: var(--code-line-height);
