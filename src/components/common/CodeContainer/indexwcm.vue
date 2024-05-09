@@ -93,7 +93,7 @@ const ContentRef = ref(null)
 
 const activeName = ref('')
 
-const lang = computed(() => activeName.value?.split('.').pop() || '')
+const lang = computed(() => activeName.value?.split('.').pop().toLowerCase() || '')
 
 function handleClickTab() {
   nextTick(() => {
