@@ -35,10 +35,10 @@
 
 <script lang="ts" setup>
 /* 全量捆绑 */
-import { bundledLanguages, bundledThemes, getHighlighter } from 'shiki'
+// import { bundledLanguages, bundledThemes, getHighlighter } from 'shiki'
 /* 细粒度捆绑 */
-// import { getHighlighterCore } from 'shiki/core'
-// import getWasm from 'shiki/wasm'
+import { getHighlighterCore } from 'shiki/core'
+import getWasm from 'shiki/wasm'
 import { useClipboard } from '@vueuse/core'
 import MarkdownIt from 'markdown-it'
 import { fromHighlighter } from '@shikijs/markdown-it/core'
@@ -110,22 +110,16 @@ function onCopy() {
   copy(content.value)
 }
 
-// const highlighter = await getHighlighterCore({
-//   themes: [import('shiki/themes/vitesse-light.mjs'), import('shiki/themes/monokai.mjs')],
-//   langs: [
-//     import('shiki/langs/javascript.mjs'),
-//     import('shiki/langs/vue.mjs'),
-//     import('shiki/langs/java.mjs'),
-//     import('shiki/langs/sh.mjs'),
-//     import('shiki/langs/md.mjs')
-//   ],
-//   loadWasm: getWasm
-// })
-
-const highlighter = await getHighlighter({
-  themes: Object.keys(bundledThemes),
-  langs: Object.keys(bundledLanguages)
+const highlighter = await getHighlighterCore({
+  themes: [import('shiki/themes/github-dark.mjs'), import('shiki/themes/github-light.mjs')],
+  langs: [import('shiki/langs/vue.mjs'), import('shiki/langs/java.mjs')],
+  loadWasm: getWasm
 })
+
+// const highlighter = await getHighlighter({
+//   themes: Object.keys(bundledThemes),
+//   langs: Object.keys(bundledLanguages)
+// })
 
 const md = MarkdownIt()
 
