@@ -277,7 +277,7 @@ function lineNumberPlugin(md, enable = false) {
   top: 3em;
   opacity: 0;
   transition: opacity 300ms;
-  z-index: 1;
+  z-index: 2;
 
   :deep(.el-button) {
     padding: 0;
