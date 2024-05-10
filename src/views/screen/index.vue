@@ -6,7 +6,13 @@
           <el-button type="primary" plain @click="onPrevPage">上一页</el-button>
           <el-button type="primary" plain @click="onNextPage">下一页</el-button>
         </el-button-group>
-        <el-select v-model="pageIdx" placeholder="请选择页面" :filterable="true" @change="onChangePage" style="width: 240px">
+        <el-select
+          v-model="pageIdx"
+          placeholder="请选择页面"
+          :filterable="true"
+          @change="onChangePage"
+          style="width: 240px"
+        >
           <el-option v-for="(item, index) in pages" :key="index" :label="item.name" :value="index" />
         </el-select>
       </div>
@@ -20,13 +26,22 @@
             @change="onChangeLayer"
             style="width: 240px"
           >
-            <el-option v-for="(item, index) in pages[pageIdx]?.layer || []" :key="index" :label="index" :value="index" />
+            <el-option
+              v-for="(item, index) in pages[pageIdx]?.layer || []"
+              :key="index"
+              :label="index"
+              :value="index"
+            />
           </el-select>
         </el-form-item>
       </div>
     </div>
     <div v-loading="loading" :class="['draw', horizontal ? 'horizontal' : '']">
-      <Draw-Container v-model:dynamicData="dynamicData" :staticData="staticData" @update:dynamicData="onEmit"></Draw-Container>
+      <Draw-Container
+        v-model:dynamicData="dynamicData"
+        :staticData="staticData"
+        @update:dynamicData="onEmit"
+      ></Draw-Container>
     </div>
   </div>
 </template>
@@ -59,6 +74,20 @@ watchEffect(() => {
     dynamicData.value = formatted.filter((item) => ['input', 'select', 'switch'].includes(item.type))
   }
 })
+
+function getAllReg() {
+  let resArr = []
+  for (const current of pages.value) {
+    const common = current.common
+    const layer = current?.layer[0]
+    const result = layer ? [...common, ...layer] : common
+    const formatted = formatPageData(result)
+    const dynamicData = formatted.filter((item) => ['input', 'select', 'switch'].includes(item.type))
+    resArr = resArr.concat(dynamicData.map((item) => item.reg))
+  }
+  resArr = Array.from(new Set(resArr))
+  console.log('@resArr ===> ', resArr)
+}
 
 function formatPageData(data) {
   return data
@@ -103,7 +132,7 @@ function formatPageData(data) {
     }, [])
 }
 
-fetch(new URL('@/assets/json/draw(19).json', import.meta.url).href)
+fetch(new URL('@/assets/json/draw.json', import.meta.url).href)
   .then((res) => res.json())
   .then((data) => {
     loading.value = false
@@ -113,6 +142,8 @@ fetch(new URL('@/assets/json/draw(19).json', import.meta.url).href)
         return !['title', 'menu', 'button', 'aside'].includes(key)
       })
       .map((item) => item[1])
+
+    getAllReg()
 
     // 待删除
     horizontal.value = Object.entries(data)
