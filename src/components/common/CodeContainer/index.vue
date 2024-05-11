@@ -28,7 +28,7 @@
       <el-tab-pane v-for="item in source" :label="item.name" :name="item.name"></el-tab-pane>
     </el-tabs>
     <el-scrollbar>
-      <div ref="ContentRef" v-html="html" class="flex" style="width: max-content"></div>
+      <div ref="ContentRef" v-html="html" class="flex w-max"></div>
     </el-scrollbar>
   </div>
 </template>
