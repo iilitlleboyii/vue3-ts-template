@@ -1,6 +1,11 @@
 <template>
   <div class="w-60 h-full flex flex-col gap-4 pb-5">
-    <el-input v-model="filterText" :placeholder="$t('components.treeselector.placeholder')" @input="onInput" clearable />
+    <el-input
+      v-model="filterText"
+      :placeholder="$t('components.treeselector.placeholder')"
+      @input="onInput"
+      clearable
+    />
     <el-scrollbar>
       <el-tree
         ref="treeRef"
@@ -17,7 +22,9 @@
       >
         <template #default="{ node }">
           <el-tooltip :content="node.label" :disabled="!truncateObj[node.id]">
-            <span v-truncate="{ obj: truncateObj, id: node.id }" class="truncate">{{ node.label }}</span>
+            <span v-truncate="{ obj: truncateObj, id: node.id }" class="truncate">{{
+              node.label
+            }}</span>
           </el-tooltip>
         </template>
       </el-tree>

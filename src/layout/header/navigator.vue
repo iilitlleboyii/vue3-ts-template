@@ -17,7 +17,12 @@
     <el-divider direction="vertical" />
     <!-- 暗黑模式 -->
     <div @click="switchTheme">
-      <el-switch v-model="dark" :active-action-icon="Moon" :inactive-action-icon="Sunny" :before-change="beforeChangeTheme" />
+      <el-switch
+        v-model="dark"
+        :active-action-icon="Moon"
+        :inactive-action-icon="Sunny"
+        :before-change="beforeChangeTheme"
+      />
     </div>
   </div>
 </template>
@@ -40,7 +45,8 @@ const beforeChangeTheme = () => {
   })
 }
 const switchTheme = (event) => {
-  const isAppearanceTransition = document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const isAppearanceTransition =
+    document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
   if (!isAppearanceTransition || !event) {
     resolveFn(true)
     return

@@ -32,7 +32,12 @@
         <!-- 选择框 -->
         <el-form-item :style="item.style" v-if="item.type === 'select'">
           <el-select v-model="item.value" :disabled="false" @change="onChange">
-            <el-option v-for="(option, index) in item.options" :key="index" :label="option.label" :value="option.value" />
+            <el-option
+              v-for="(option, index) in item.options"
+              :key="index"
+              :label="option.label"
+              :value="option.value"
+            />
           </el-select>
         </el-form-item>
         <!-- 开关 -->
@@ -63,7 +68,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 const props = defineProps({
   staticData: {
     type: null,

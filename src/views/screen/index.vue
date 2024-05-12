@@ -13,7 +13,12 @@
           @change="onChangePage"
           style="width: 240px"
         >
-          <el-option v-for="(item, index) in pages" :key="index" :label="item.name" :value="index" />
+          <el-option
+            v-for="(item, index) in pages"
+            :key="index"
+            :label="item.name"
+            :value="index"
+          />
         </el-select>
       </div>
       <div>
@@ -70,8 +75,12 @@ watchEffect(() => {
     const layer = current?.layer[layerIdx.value]
     const result = layer ? [...common, ...layer] : common
     const formatted = formatPageData(result)
-    staticData.value = formatted.filter((item) => !['input', 'select', 'switch'].includes(item.type))
-    dynamicData.value = formatted.filter((item) => ['input', 'select', 'switch'].includes(item.type))
+    staticData.value = formatted.filter(
+      (item) => !['input', 'select', 'switch'].includes(item.type)
+    )
+    dynamicData.value = formatted.filter((item) =>
+      ['input', 'select', 'switch'].includes(item.type)
+    )
   }
 })
 
@@ -82,7 +91,9 @@ function getAllReg() {
     const layer = current?.layer[0]
     const result = layer ? [...common, ...layer] : common
     const formatted = formatPageData(result)
-    const dynamicData = formatted.filter((item) => ['input', 'select', 'switch'].includes(item.type))
+    const dynamicData = formatted.filter((item) =>
+      ['input', 'select', 'switch'].includes(item.type)
+    )
     resArr = resArr.concat(dynamicData.map((item) => item.reg))
   }
   resArr = Array.from(new Set(resArr))

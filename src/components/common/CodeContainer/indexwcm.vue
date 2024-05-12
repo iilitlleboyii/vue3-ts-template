@@ -32,7 +32,11 @@
       </template>
     </div>
     <div class="code-lang">{{ lang }}</div>
-    <el-tabs v-model="activeName" @tab-click="handleClickTab" :class="lineNums ? 'line-numbers-mode' : ''">
+    <el-tabs
+      v-model="activeName"
+      @tab-click="handleClickTab"
+      :class="lineNums ? 'line-numbers-mode' : ''"
+    >
       <el-tab-pane v-for="item in source" :label="item.name" :name="item.name"></el-tab-pane>
     </el-tabs>
     <el-scrollbar>
@@ -239,7 +243,10 @@ function lineNumberPlugin(md, enable = false) {
     const rawCode = fence(...args)
     const [tokens, idx] = args
     const info = tokens[idx].info
-    if ((!enable && !/:line-numbers($| |=)/.test(info)) || (enable && /:no-line-numbers($| )/.test(info))) {
+    if (
+      (!enable && !/:line-numbers($| |=)/.test(info)) ||
+      (enable && /:no-line-numbers($| )/.test(info))
+    ) {
       return rawCode
     }
     let startLineNumber = 1
