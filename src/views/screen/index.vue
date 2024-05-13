@@ -88,6 +88,7 @@ watch(
       dynamicData.value = formatted.filter((item) =>
         ['input', 'select', 'switch'].includes(item.type)
       )
+      console.log('@dynamicData.value 🚀🚀🚀~ ', dynamicData.value)
       getRegData()
     }
   },
@@ -103,16 +104,23 @@ function getRegData() {
       sn: '229c5fb163bad606', //主机编码
       regList: Array.from(new Set(dynamicData.value.map((item) => item.reg))) //寄存器列表
     }
-    getDrawCache(payload.value).then((resp) => {
-      dynamicData.value = dynamicData.value.map((item) => {
-        return {
-          ...item,
-          value: resp.data[item.reg] || '-'
-        }
+    getDrawCache(payload.value)
+      .then((resp) => {
+        dynamicData.value = dynamicData.value.map((item) => {
+          return {
+            ...item,
+            value:
+              (item.type === 'input' && item.bitNum
+                ? resp.data[item.reg].slice(0, item.bitNum * -1)
+                : resp.data[item.reg]) || '-'
+          }
+        })
+        loading.value = false
+        resolve()
       })
-      loading.value = false
-      resolve()
-    })
+      .catch((err) => {
+        loading.value = false
+      })
   })
 }
 
