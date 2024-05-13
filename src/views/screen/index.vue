@@ -21,7 +21,8 @@
           />
         </el-select>
       </div>
-      <div>
+      <div class="flex">
+        <el-button type="danger" plain @click="onRefreshCache">刷新</el-button>
         <el-form-item label="选择层级">
           <el-select
             v-model="layerIdx"
@@ -51,7 +52,9 @@
   </div>
 </template>
 
-<script setup name="Home">
+<script setup name="Screen">
+import { refreshDrawReg, getDrawCache } from '@/api/common'
+
 const loading = ref(true)
 
 const horizontal = ref(true)
@@ -68,21 +71,56 @@ const { pageIdx, layerIdx, pages } = toRefs(pageSelector)
 const staticData = shallowRef([])
 const dynamicData = ref([])
 
-watchEffect(() => {
-  if (pages.value.length > 0 && pageIdx.value >= 0) {
-    const current = pages.value[pageIdx.value]
-    const common = current.common
-    const layer = current?.layer[layerIdx.value]
-    const result = layer ? [...common, ...layer] : common
-    const formatted = formatPageData(result)
-    staticData.value = formatted.filter(
-      (item) => !['input', 'select', 'switch'].includes(item.type)
-    )
-    dynamicData.value = formatted.filter((item) =>
-      ['input', 'select', 'switch'].includes(item.type)
-    )
+const payload = ref(null)
+
+watch(
+  [pages, pageIdx, layerIdx],
+  () => {
+    if (pages.value.length > 0 && pageIdx.value >= 0) {
+      const current = pages.value[pageIdx.value]
+      const common = current.common
+      const layer = current?.layer[layerIdx.value]
+      const result = layer ? [...common, ...layer] : common
+      const formatted = formatPageData(result)
+      staticData.value = formatted.filter(
+        (item) => !['input', 'select', 'switch'].includes(item.type)
+      )
+      dynamicData.value = formatted.filter((item) =>
+        ['input', 'select', 'switch'].includes(item.type)
+      )
+      getRegData()
+    }
+  },
+  {
+    immediate: true
   }
-})
+)
+
+function getRegData() {
+  return new Promise((resolve, reject) => {
+    loading.value = true
+    payload.value = {
+      sn: '229c5fb163bad606', //主机编码
+      regList: Array.from(new Set(dynamicData.value.map((item) => item.reg))) //寄存器列表
+    }
+    getDrawCache(payload.value).then((resp) => {
+      dynamicData.value = dynamicData.value.map((item) => {
+        return {
+          ...item,
+          value: resp.data[item.reg] || '-'
+        }
+      })
+      loading.value = false
+      resolve()
+    })
+  })
+}
+
+function onRefreshCache() {
+  refreshDrawReg(payload.value).then((res) => {
+    getRegData().then(ElMessage.success('刷新成功'))
+  })
+}
 
 function getAllReg() {
   let resArr = []
@@ -97,7 +135,7 @@ function getAllReg() {
     resArr = resArr.concat(dynamicData.map((item) => item.reg))
   }
   resArr = Array.from(new Set(resArr))
-  console.log('@resArr ===> ', resArr)
+  console.log('@resArr 🚀🚀🚀~ ', resArr)
 }
 
 function formatPageData(data) {

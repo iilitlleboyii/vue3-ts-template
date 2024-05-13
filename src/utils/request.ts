@@ -85,9 +85,9 @@ const request = axios.create({
 // 请求拦截
 request.interceptors.request.use(
   (config) => {
+    config.baseURL = config.host ? '/wcm-api' : config.baseURL
     // django风格是要加/
     config.url = config.url!.endsWith('/') ? config.url : config.url + '/'
-
     // 请求是否携带令牌，默认携带
     config.headers['Carry-Token'] = config.headers['Carry-Token'] ?? true
     const access = getItem(storageKeys.access)
