@@ -107,12 +107,20 @@ function getRegData() {
     getDrawCache(payload.value)
       .then((resp) => {
         dynamicData.value = dynamicData.value.map((item) => {
+          // ! toSpliced 兼容性
+          let value = resp.data[item.reg]
+          if (item.type === 'input' && item.showFormatVal) {
+            if (item.showFormatVal != '0') {
+              let formatVal = value.split('').toSpliced(item.showFormatVal * -1, 0, '.')
+              if (formatVal.indexOf('.') === 0) {
+                formatVal.unshift('0')
+              }
+              value = formatVal.join('')
+            }
+          }
           return {
             ...item,
-            value:
-              (item.type === 'input' && item.bitNum
-                ? resp.data[item.reg].slice(0, item.bitNum * -1)
-                : resp.data[item.reg]) || '-'
+            value: value || '-'
           }
         })
         loading.value = false
@@ -164,6 +172,7 @@ function formatPageData(data) {
       if (item.type === 'input') {
         ret.reg = item.reg
         ret.bitWidth = item.bitWidth
+        ret.showFormatVal = item.showFormatVal
       } else if (item.type === 'select') {
         ret.reg = item.reg
         ret.bitWidth = item.bitWidth
@@ -189,7 +198,7 @@ function formatPageData(data) {
     }, [])
 }
 
-fetch(new URL('@/assets/json/draw.json', import.meta.url).href)
+fetch(new URL('@/assets/json/draw-bole.json', import.meta.url).href)
   .then((res) => res.json())
   .then((data) => {
     loading.value = false
