@@ -85,9 +85,14 @@ const request = axios.create({
 // 请求拦截
 request.interceptors.request.use(
   (config) => {
-    config.baseURL = config.host ? '/wcm-api' : config.baseURL
+    // wcm-api 测试
+    if (config.host) {
+      config.baseURL = '/wcm-api'
+      return config
+    }
+    
     // django风格是要加/
-    config.url = config.url!.endsWith('/') ? config.url : config.url + '/'
+    config.url = config.url.endsWith('/') ? config.url : config.url + '/'
     // 请求是否携带令牌，默认携带
     config.headers['Carry-Token'] = config.headers['Carry-Token'] ?? true
     const access = getItem(storageKeys.access)
@@ -122,6 +127,12 @@ request.interceptors.response.use(
     // 认证失败
     else if (code === 401) {
       if (msg === '用户名或密码错误') {
+        ElMessage.error(msg)
+        return Promise.reject(msg)
+      }
+
+      // wcm-api 测试
+      if (config.host) {
         ElMessage.error(msg)
         return Promise.reject(msg)
       }
