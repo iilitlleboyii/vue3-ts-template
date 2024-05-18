@@ -82,12 +82,16 @@ watch(
       const layer = current?.layer[layerIdx.value]
       const result = layer ? [...common, ...layer] : common
       const formatted = formatPageData(result)
-      staticData.value = formatted.filter(
-        (item) => !['input', 'select', 'switch'].includes(item.type)
+      const [staticDataItems, dynamicDataItems] = formatted.reduce(
+        ([staticData, dynamicData], item) => {
+          return ['input', 'select', 'switch'].includes(item.type)
+            ? [staticData, [...dynamicData, item]]
+            : [[...staticData, item], dynamicData]
+        },
+        [[], []]
       )
-      dynamicData.value = formatted.filter((item) =>
-        ['input', 'select', 'switch'].includes(item.type)
-      )
+      staticData.value = staticDataItems
+      dynamicData.value = dynamicDataItems
       console.log('@dynamicData.value 🚀🚀🚀~ ', dynamicData.value)
       getRegData()
     }
@@ -105,17 +109,17 @@ function getRegData() {
       regList: Array.from(new Set(dynamicData.value.map((item) => item.reg))) //寄存器列表
     }
     getDrawCache(payload.value)
-      .then((resp) => {
+      .then((res) => {
         dynamicData.value = dynamicData.value.map((item) => {
           // ! toSpliced 兼容性
-          let value = resp.data[item.reg]
+          let value = res.data[item.reg]
           if (item.type === 'input' && item.showFormatVal) {
             if (item.showFormatVal != '0') {
-              let formatVal = value.split('').toSpliced(item.showFormatVal * -1, 0, '.')
-              if (formatVal.indexOf('.') === 0) {
-                formatVal.unshift('0')
-              }
-              value = formatVal.join('')
+              const formatVal = value
+                .split('')
+                .toSpliced(item.showFormatVal * -1, 0, '.')
+                .join('')
+              value = formatVal.startsWith('.') ? '0' + formatVal : formatVal
             }
           }
           return {
@@ -126,14 +130,14 @@ function getRegData() {
         loading.value = false
         resolve()
       })
-      .catch((err) => {
+      .catch(() => {
         loading.value = false
       })
   })
 }
 
 function onRefreshCache() {
-  refreshDrawReg(payload.value).then((res) => {
+  refreshDrawReg(payload.value).then(() => {
     getRegData().then(ElMessage.success('刷新成功'))
   })
 }
