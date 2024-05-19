@@ -3,14 +3,20 @@
     <div>
       <div :class="['controller', horizontal ? 'horizontal' : '']">
         <div style="flex-shrink: 0">
-          <el-button @click="onPrevPage" :disabled="pages.length <= 0 || pageIdx === 0" circle text title="上一页">
+          <el-button
+            @click="onPrevPage"
+            :disabled="isDebug || pages.length <= 0 || pageIdx === 0"
+            circle
+            text
+            title="上一页"
+          >
             <template #default>
               <i-ep:back font-size="4" />
             </template>
           </el-button>
           <el-button
             @click="onNextPage"
-            :disabled="pages.length <= 0 || pageIdx === pages.length - 1"
+            :disabled="isDebug || pages.length <= 0 || pageIdx === pages.length - 1"
             circle
             text
             title="下一页"
@@ -19,21 +25,35 @@
               <i-ep:right font-size="4" />
             </template>
           </el-button>
-          <el-button circle text @click="onRefreshCache" title="刷新">
+          <el-button circle text @click="onRefreshCache" :disabled="isDebug" title="刷新">
             <template #default>
               <i-ep:refresh font-size="4" />
             </template>
           </el-button>
-          <el-button circle text @click="onResetPage" title="首页">
+          <el-button circle text @click="onResetPage" :disabled="isDebug" title="首页">
             <template #default>
               <i-ep:house font-size="4" />
             </template>
           </el-button>
         </div>
         <el-divider direction="vertical" border-style="dashed" />
-        <el-select v-model="pageIdx" placeholder="请选择页面" :filterable="true" @change="onChangePage" style="flex: 1">
+        <el-select v-model="pageIdx" placeholder="请选择页面" :filterable="true" :disabled="isDebug" style="flex: 1">
           <el-option v-for="(item, index) in pages" :key="index" :label="item.name" :value="index" />
         </el-select>
+        <el-divider direction="vertical" border-style="dashed" />
+        <div style="flex-shrink: 0">
+          <el-switch v-model="isDebug" @change="onChangeDebug">
+            <template #active-action>
+              <i-ep:setting font-size="3" />
+            </template>
+            <template #inactive-action>
+              <i-ep:setting font-size="3" />
+            </template>
+          </el-switch>
+          <el-button @click="onCopy" text :disabled="!isDebug" style="margin-left: 6px; width: 75px">{{
+            reg
+          }}</el-button>
+        </div>
       </div>
       <div v-if="false">
         <el-form-item label="选择层级">
@@ -42,7 +62,6 @@
             placeholder="请选择层级"
             :filterable="true"
             :disabled="(pages[pageIdx]?.layer || []).length === 0"
-            @change="onChangeLayer"
             style="width: 240px"
           >
             <el-option
@@ -56,21 +75,16 @@
       </div>
     </div>
     <div v-loading="loading" :class="['draw', horizontal ? 'horizontal' : '']">
-      <Draw-Container
-        v-model:dynamicData="dynamicData"
-        :staticData="staticData"
-        @update:dynamicData="onEmit"
-      ></Draw-Container>
+      <Draw-Container v-model:dynamicData="dynamicData" :staticData="staticData" :debug="isDebug"></Draw-Container>
     </div>
   </div>
 </template>
 
 <script setup name="Screen">
 import { refreshDrawReg, getDrawCache } from '@/api/common'
+import { useClipboard } from '@vueuse/core'
 
 const loading = ref(true)
-
-const horizontal = ref(false)
 
 const rawData = shallowRef([])
 
@@ -105,7 +119,6 @@ watch(
       )
       staticData.value = staticDataItems
       dynamicData.value = dynamicDataItems
-      console.log('@dynamicData.value 🚀🚀🚀~ ', dynamicData.value)
       getRegData()
     }
   },
@@ -113,6 +126,24 @@ watch(
     immediate: true
   }
 )
+
+function onPrevPage() {
+  if (pageIdx.value > 0) {
+    pageIdx.value -= 1
+  } else {
+    ElMessage.warning('已经是第一页了~')
+  }
+}
+function onNextPage() {
+  if (pageIdx.value < pages.value.length - 1) {
+    pageIdx.value += 1
+  } else {
+    ElMessage.warning('已经是最后一页了~')
+  }
+}
+function onResetPage() {
+  pageIdx.value = 0
+}
 
 function getRegData() {
   return new Promise((resolve, reject) => {
@@ -151,24 +182,9 @@ function getRegData() {
 
 function onRefreshCache() {
   refreshDrawReg(payload.value)
-    .then(() => {
-      getRegData().then(ElMessage.success('刷新成功'))
-    })
+    .then(getRegData)
+    .then(ElMessage.success('刷新成功'))
     .catch(() => {})
-}
-
-function getAllReg() {
-  let resArr = []
-  for (const current of pages.value) {
-    const common = current.common
-    const layer = current?.layer[0]
-    const result = layer ? [...common, ...layer] : common
-    const formatted = formatPageData(result)
-    const dynamicData = formatted.filter((item) => ['input', 'select', 'switch'].includes(item.type))
-    resArr = resArr.concat(dynamicData.map((item) => item.reg))
-  }
-  resArr = Array.from(new Set(resArr))
-  console.log('@resArr 🚀🚀🚀~ ', resArr)
 }
 
 function formatPageData(data) {
@@ -215,6 +231,52 @@ function formatPageData(data) {
     }, [])
 }
 
+const horizontal = ref(false)
+
+const isDebug = ref(false)
+
+const reg = ref('寄存器')
+const { copy, copied, isSupported } = useClipboard({
+  legacy: true
+})
+function onCopy() {
+  if (!isSupported.value) return ElMessage.warning('当前浏览器环境不支持复制！')
+  if (copied.value) return
+  copy(reg.value)
+  ElMessage.success('复制成功')
+}
+
+const debugHandler = (event) => {
+  const target = event.target
+  if (target.closest('.controller')) return
+  const parentElement = target.closest('.debug-ele')
+  reg.value = parentElement ? parentElement.getAttribute('data-reg') : '寄存器'
+}
+
+function onChangeDebug(val) {
+  // 使用mousedown兼容select组件
+  if (val) {
+    document.addEventListener('mousedown', debugHandler)
+  } else {
+    document.removeEventListener('mousedown', debugHandler)
+    reg.value = '寄存器'
+  }
+}
+
+function getAllReg() {
+  let resArr = []
+  for (const current of pages.value) {
+    const common = current.common
+    const layer = current?.layer[0]
+    const result = layer ? [...common, ...layer] : common
+    const formatted = formatPageData(result)
+    const dynamicData = formatted.filter((item) => ['input', 'select', 'switch'].includes(item.type))
+    resArr = resArr.concat(dynamicData.map((item) => item.reg))
+  }
+  resArr = Array.from(new Set(resArr))
+  console.log('@resArr 🚀🚀🚀~ ', resArr)
+}
+
 fetch(new URL('@/assets/json/draw-bole.json', import.meta.url).href)
   .then((res) => res.json())
   .then((data) => {
@@ -237,38 +299,6 @@ fetch(new URL('@/assets/json/draw-bole.json', import.meta.url).href)
       .flat()
       .some((item) => item.width.slice(0, -2) > 768)
   })
-
-function onPrevPage() {
-  if (pageIdx.value > 0) {
-    pageIdx.value -= 1
-  } else {
-    ElMessage.warning('已经是第一页了~')
-  }
-}
-
-function onNextPage() {
-  if (pageIdx.value < pages.value.length - 1) {
-    pageIdx.value += 1
-  } else {
-    ElMessage.warning('已经是最后一页了~')
-  }
-}
-
-function onResetPage() {
-  pageIdx.value = 0
-}
-
-function onChangePage(value) {
-  console.log('当前页面：', value)
-}
-
-function onChangeLayer(value) {
-  console.log('当前层级：', value)
-}
-
-function onEmit(value) {
-  console.log(value)
-}
 </script>
 
 <style lang="scss" scoped>
