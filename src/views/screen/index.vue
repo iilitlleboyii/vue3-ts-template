@@ -3,12 +3,18 @@
     <div>
       <div :class="['controller', horizontal ? 'horizontal' : '']">
         <div style="flex-shrink: 0">
-          <el-button circle text @click="onPrevPage" title="上一页">
+          <el-button @click="onPrevPage" :disabled="pages.length <= 0 || pageIdx === 0" circle text title="上一页">
             <template #default>
               <i-ep:back font-size="4" />
             </template>
           </el-button>
-          <el-button circle text @click="onNextPage" title="下一页">
+          <el-button
+            @click="onNextPage"
+            :disabled="pages.length <= 0 || pageIdx === pages.length - 1"
+            circle
+            text
+            title="下一页"
+          >
             <template #default>
               <i-ep:right font-size="4" />
             </template>
