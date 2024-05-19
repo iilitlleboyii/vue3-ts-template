@@ -28,12 +28,7 @@
       </template>
       <template v-else>
         <el-form-item prop="phoneNumber">
-          <el-input
-            v-model="loginForm.phoneNumber"
-            placeholder="手机号"
-            size="large"
-            :maxlength="11"
-          >
+          <el-input v-model="loginForm.phoneNumber" placeholder="手机号" size="large" :maxlength="11">
             <template #prefix><i-ep:iphone color="#165dff" /></template
           ></el-input>
         </el-form-item>
@@ -60,12 +55,7 @@
         </el-row>
       </el-form-item>
       <el-form-item>
-        <el-button
-          type="primary"
-          size="large"
-          class="w-full"
-          :loading="loading"
-          @click="onLoginFormClick"
+        <el-button type="primary" size="large" class="w-full" :loading="loading" @click="onLoginFormClick"
           >确 定</el-button
         >
       </el-form-item>
@@ -160,9 +150,7 @@ function onLoginFormClick() {
               // TODO 信息加密
               Cookies.set(
                 '__UU__',
-                encodeURIComponent(
-                  JSON.stringify({ username: loginForm.username, password: loginForm.password })
-                ),
+                encodeURIComponent(JSON.stringify({ username: loginForm.username, password: loginForm.password })),
                 {
                   expires: 7
                 }

@@ -29,17 +29,10 @@
       <el-table-column label="操作" width="100" align="center" fixed="right">
         <template #default="{ row }">
           <el-row justify="space-between">
-            <el-button
-              link
-              size="small"
-              type="primary"
-              @click="handleEdit(row)"
-              :disabled="row.is_superuser"
+            <el-button link size="small" type="primary" @click="handleEdit(row)" :disabled="row.is_superuser"
               >编辑</el-button
             >
-            <el-button link size="small" type="danger" @click="handleRemove(row)" disabled
-              >停用</el-button
-            >
+            <el-button link size="small" type="danger" @click="handleRemove(row)" disabled>停用</el-button>
           </el-row>
         </template>
       </el-table-column>
@@ -74,12 +67,7 @@
           <el-input v-model="form.nickname" placeholder="请输入昵称" clearable></el-input>
         </el-form-item>
         <el-form-item label="手机号" prop="telephone">
-          <el-input
-            v-model="form.telephone"
-            :maxlength="11"
-            placeholder="请输入手机号"
-            clearable
-          ></el-input>
+          <el-input v-model="form.telephone" :maxlength="11" placeholder="请输入手机号" clearable></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="form.email" placeholder="请输入邮箱" clearable></el-input>
@@ -228,12 +216,7 @@ const rules = {
     }
   ]
 }
-const { open, title, form, reset, cancel, submit } = useForm(
-  createUser,
-  updateUser,
-  formRef,
-  handleSearch
-)
+const { open, title, form, reset, cancel, submit } = useForm(createUser, updateUser, formRef, handleSearch)
 
 function handleEdit(row) {
   if (row.id !== $userStore.userInfo.id && !$userStore.roles.includes('admin')) {

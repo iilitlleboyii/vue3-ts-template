@@ -51,27 +51,13 @@
     >
       <el-form ref="formRef" :model="form" :rules="rules" label-width="auto" @submit.prevent>
         <el-form-item label="角色名" prop="name">
-          <el-input
-            v-model="form.name"
-            :maxlength="20"
-            placeholder="请输入角色名"
-            clearable
-          ></el-input>
+          <el-input v-model="form.name" :maxlength="20" placeholder="请输入角色名" clearable></el-input>
         </el-form-item>
         <el-form-item label="角色编码" prop="code">
-          <el-input
-            v-model="form.code"
-            :maxlength="100"
-            placeholder="请输入角色编码"
-            clearable
-          ></el-input>
+          <el-input v-model="form.code" :maxlength="100" placeholder="请输入角色编码" clearable></el-input>
         </el-form-item>
         <el-form-item label="排序" prop="order">
-          <el-input-number
-            v-model="form.order"
-            :min="0"
-            controls-position="right"
-          ></el-input-number>
+          <el-input-number v-model="form.order" :min="0" controls-position="right"></el-input-number>
         </el-form-item>
         <el-form-item label="激活" prop="is_active">
           <el-switch v-model="form.is_active" />
@@ -165,12 +151,7 @@ const rules = {
     }
   ]
 }
-const { open, title, form, reset, cancel, submit } = useForm(
-  createRole,
-  updateRole,
-  formRef,
-  handleSearch
-)
+const { open, title, form, reset, cancel, submit } = useForm(createRole, updateRole, formRef, handleSearch)
 
 function handleAdd() {
   title.value = '新增角色'

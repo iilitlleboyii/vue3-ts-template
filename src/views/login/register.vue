@@ -1,13 +1,7 @@
 <template>
   <AppIndex>
     <div class="w-full text-center mb-4">账户注册</div>
-    <el-form
-      ref="registerFormRef"
-      label-width="auto"
-      :model="registerForm"
-      :rules="rules"
-      @submit.prevent
-    >
+    <el-form ref="registerFormRef" label-width="auto" :model="registerForm" :rules="rules" @submit.prevent>
       <el-form-item prop="username">
         <el-input v-model="registerForm.username" placeholder="用户名" size="large" />
       </el-form-item>
@@ -35,12 +29,7 @@
           <el-input v-model="registerForm.email" placeholder="邮箱" size="large" />
         </el-form-item>
         <el-form-item prop="phoneNumber">
-          <el-input
-            v-model="registerForm.phoneNumber"
-            placeholder="手机号"
-            size="large"
-            :maxlength="11"
-          >
+          <el-input v-model="registerForm.phoneNumber" placeholder="手机号" size="large" :maxlength="11">
             <template #prepend>
               <el-select v-model="select" size="large" class="w-20">
                 <el-option label="+86" value="1" />
@@ -65,12 +54,7 @@
       </template>
       <el-form-item>
         <el-row justify="space-between" class="w-full">
-          <el-button
-            type="primary"
-            size="large"
-            :loading="loading"
-            @click="onRegisterFormClick"
-            class="w-1/2"
+          <el-button type="primary" size="large" :loading="loading" @click="onRegisterFormClick" class="w-1/2"
             >注 册</el-button
           >
           <el-button type="primary" link @click="$router.replace('/')">使用已有账户登录</el-button>

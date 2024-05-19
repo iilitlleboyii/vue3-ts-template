@@ -48,9 +48,7 @@
         label="文件名"
         align="center"
         show-overflow-tooltip
-        :formatter="
-          (row, column, cellValue, index) => cellValue.substring(0, cellValue.lastIndexOf('.'))
-        "
+        :formatter="(row, column, cellValue, index) => cellValue.substring(0, cellValue.lastIndexOf('.'))"
       />
       <el-table-column
         prop="name"
@@ -62,16 +60,10 @@
       <el-table-column prop="size" label="大小" align="center" width="90" />
       <el-table-column prop="status" label="状态" align="center" width="90">
         <template #default="scope">
-          <el-tag v-if="scope.row.status === 'ready'" type="info" disable-transitions
-            >待上传</el-tag
-          >
+          <el-tag v-if="scope.row.status === 'ready'" type="info" disable-transitions>待上传</el-tag>
           <el-tag v-else-if="scope.row.status === 'uploading'" disable-transitions>上传中</el-tag>
-          <el-tag v-else-if="scope.row.status === 'success'" type="success" disable-transitions
-            >已上传</el-tag
-          >
-          <el-tag v-else-if="scope.row.status === 'canceled'" type="warning" disable-transitions
-            >已取消</el-tag
-          >
+          <el-tag v-else-if="scope.row.status === 'success'" type="success" disable-transitions>已上传</el-tag>
+          <el-tag v-else-if="scope.row.status === 'canceled'" type="warning" disable-transitions>已取消</el-tag>
           <el-tag v-else type="danger" disable-transitions>已失败</el-tag>
         </template>
       </el-table-column>
@@ -149,19 +141,13 @@ const fileList = ref([])
 // 文件数量
 const fileNums = computed(() => fileList.value.length)
 // 上传总大小
-const totalSize = computed(() =>
-  fileList.value.map((item) => item.size).reduce((total, curr) => total + curr, 0)
-)
+const totalSize = computed(() => fileList.value.map((item) => item.size).reduce((total, curr) => total + curr, 0))
 // 已上传数量
-const uploadedNums = computed(
-  () => fileList.value.filter((item) => item.status === 'success').length
-)
+const uploadedNums = computed(() => fileList.value.filter((item) => item.status === 'success').length)
 // 已失败数量
 const failedNums = computed(() => fileList.value.filter((item) => item.status === 'failed').length)
 // 已取消数量
-const cancelNums = computed(
-  () => fileList.value.filter((item) => item.status === 'canceled').length
-)
+const cancelNums = computed(() => fileList.value.filter((item) => item.status === 'canceled').length)
 // 格式化进度条
 const formatProgress = (status) => {
   const statusDict = {
@@ -376,15 +362,7 @@ function uploadFile(file, url, access) {
       file.status = 'success'
     } else {
       file.status = 'failed'
-      ElMessage.error(
-        '文件' +
-          file.name +
-          '上传失败，' +
-          '错误状态码:' +
-          xhr.status +
-          '，错误描述:' +
-          xhr.statusText
-      )
+      ElMessage.error('文件' + file.name + '上传失败，' + '错误状态码:' + xhr.status + '，错误描述:' + xhr.statusText)
     }
   }
   // 监控上传请求进度

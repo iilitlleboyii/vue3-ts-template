@@ -1,28 +1,35 @@
 <template>
   <div class="app-container">
-    <div style="float: right">
-      <div>
-        <el-button-group>
-          <el-button type="primary" plain @click="onPrevPage">上一页</el-button>
-          <el-button type="primary" plain @click="onNextPage">下一页</el-button>
-        </el-button-group>
-        <el-select
-          v-model="pageIdx"
-          placeholder="请选择页面"
-          :filterable="true"
-          @change="onChangePage"
-          style="width: 240px"
-        >
-          <el-option
-            v-for="(item, index) in pages"
-            :key="index"
-            :label="item.name"
-            :value="index"
-          />
+    <div>
+      <div :class="['controller', horizontal ? 'horizontal' : '']">
+        <div style="flex-shrink: 0">
+          <el-button circle text @click="onPrevPage" title="上一页">
+            <template #default>
+              <i-ep:back font-size="4" />
+            </template>
+          </el-button>
+          <el-button circle text @click="onNextPage" title="下一页">
+            <template #default>
+              <i-ep:right font-size="4" />
+            </template>
+          </el-button>
+          <el-button circle text @click="onRefreshCache" title="刷新">
+            <template #default>
+              <i-ep:refresh font-size="4" />
+            </template>
+          </el-button>
+          <el-button circle text @click="onResetPage" title="首页">
+            <template #default>
+              <i-ep:house font-size="4" />
+            </template>
+          </el-button>
+        </div>
+        <el-divider direction="vertical" border-style="dashed" />
+        <el-select v-model="pageIdx" placeholder="请选择页面" :filterable="true" @change="onChangePage" style="flex: 1">
+          <el-option v-for="(item, index) in pages" :key="index" :label="item.name" :value="index" />
         </el-select>
       </div>
-      <div class="flex">
-        <el-button type="danger" plain @click="onRefreshCache">刷新</el-button>
+      <div v-if="false">
         <el-form-item label="选择层级">
           <el-select
             v-model="layerIdx"
@@ -57,7 +64,7 @@ import { refreshDrawReg, getDrawCache } from '@/api/common'
 
 const loading = ref(true)
 
-const horizontal = ref(true)
+const horizontal = ref(false)
 
 const rawData = shallowRef([])
 
@@ -137,9 +144,11 @@ function getRegData() {
 }
 
 function onRefreshCache() {
-  refreshDrawReg(payload.value).then(() => {
-    getRegData().then(ElMessage.success('刷新成功'))
-  })
+  refreshDrawReg(payload.value)
+    .then(() => {
+      getRegData().then(ElMessage.success('刷新成功'))
+    })
+    .catch(() => {})
 }
 
 function getAllReg() {
@@ -149,9 +158,7 @@ function getAllReg() {
     const layer = current?.layer[0]
     const result = layer ? [...common, ...layer] : common
     const formatted = formatPageData(result)
-    const dynamicData = formatted.filter((item) =>
-      ['input', 'select', 'switch'].includes(item.type)
-    )
+    const dynamicData = formatted.filter((item) => ['input', 'select', 'switch'].includes(item.type))
     resArr = resArr.concat(dynamicData.map((item) => item.reg))
   }
   resArr = Array.from(new Set(resArr))
@@ -241,6 +248,10 @@ function onNextPage() {
   }
 }
 
+function onResetPage() {
+  pageIdx.value = 0
+}
+
 function onChangePage(value) {
   console.log('当前页面：', value)
 }
@@ -261,12 +272,27 @@ function onEmit(value) {
   background-color: #f9f9f9;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   border-radius: 4px;
-  scale: 0.8;
+  scale: 0.75;
   transform-origin: top left;
 
   &.horizontal {
     width: 1024px;
     height: 768px;
+  }
+}
+
+.controller {
+  display: flex;
+  align-items: center;
+  width: calc(768px * 0.75);
+  margin-bottom: 16px;
+
+  :deep(.el-select__wrapper) {
+    border-radius: 9999px;
+  }
+
+  &.horizontal {
+    width: calc(1024px * 0.75);
   }
 }
 </style>

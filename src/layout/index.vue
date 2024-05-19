@@ -1,11 +1,7 @@
 <template>
   <el-container class="w-screen h-screen overflow-hidden">
     <el-aside :width="isCollapse ? '64px' : '200px'">
-      <LogoTitle
-        :is-collapse="isCollapse"
-        icon-name="home"
-        :title="$t('layout.backend')"
-      ></LogoTitle>
+      <LogoTitle :is-collapse="isCollapse" icon-name="home" :title="$t('layout.backend')"></LogoTitle>
       <el-scrollbar>
         <el-menu
           :unique-opened="true"

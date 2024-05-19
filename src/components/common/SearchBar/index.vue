@@ -2,14 +2,7 @@
   <div>
     <el-form ref="searchBarRef" :model="queryParams" label-width="auto" @submit.prevent>
       <el-row :gutter="20">
-        <el-col
-          v-for="(item, index) in visibleItems"
-          :key="index"
-          :lg="6"
-          :md="8"
-          :sm="12"
-          :xs="24"
-        >
+        <el-col v-for="(item, index) in visibleItems" :key="index" :lg="6" :md="8" :sm="12" :xs="24">
           <el-form-item :label="item.label" :prop="item.prop">
             <el-input
               v-if="item.name === 'el-input'"
@@ -75,19 +68,9 @@
                 <i-ep:refresh />
               </template>
             </el-button>
-            <el-button
-              v-if="isShow"
-              type="primary"
-              size="small"
-              link
-              @click="isCollapse = !isCollapse"
-            >
+            <el-button v-if="isShow" type="primary" size="small" link @click="isCollapse = !isCollapse">
               <template #default>
-                <span>{{
-                  isCollapse
-                    ? $t('components.searchbar.expand')
-                    : $t('components.searchbar.collapse')
-                }}</span>
+                <span>{{ isCollapse ? $t('components.searchbar.expand') : $t('components.searchbar.collapse') }}</span>
                 <i-ep:arrow-down v-if="isCollapse" />
                 <i-ep:arrow-up v-else />
               </template>
@@ -140,9 +123,7 @@ function resetForm() {
 const isCollapse = ref(true)
 const innerWidth = ref(window.innerWidth)
 const counter = computed(() => (innerWidth.value >= 1200 ? 3 : innerWidth.value >= 992 ? 2 : 1))
-const visibleItems = computed(() =>
-  isCollapse.value ? props.config.slice(0, counter.value) : props.config
-)
+const visibleItems = computed(() => (isCollapse.value ? props.config.slice(0, counter.value) : props.config))
 const isShow = computed(() => !isCollapse.value || props.config.length > visibleItems.value.length)
 
 const handleResize = debounce(() => {

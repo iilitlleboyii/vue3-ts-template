@@ -90,7 +90,7 @@ request.interceptors.request.use(
       config.baseURL = '/wcm-api'
       return config
     }
-    
+
     // django风格是要加/
     config.url = config.url.endsWith('/') ? config.url : config.url + '/'
     // 请求是否携带令牌，默认携带

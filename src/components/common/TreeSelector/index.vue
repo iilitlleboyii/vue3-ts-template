@@ -22,9 +22,7 @@
       >
         <template #default="{ node }">
           <el-tooltip :content="node.label" :disabled="!truncateObj[node.id]">
-            <span v-truncate="{ obj: truncateObj, id: node.id }" class="truncate">{{
-              node.label
-            }}</span>
+            <span v-truncate="{ obj: truncateObj, id: node.id }" class="truncate">{{ node.label }}</span>
           </el-tooltip>
         </template>
       </el-tree>

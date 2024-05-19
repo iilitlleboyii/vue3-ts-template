@@ -26,11 +26,11 @@
       </template>
       <template v-for="item in dynamicData" :key="item.id">
         <!-- 输入框 -->
-        <el-form-item :style="item.style" v-if="item.type === 'input'" :class="`reg-${item.reg}`">
+        <el-form-item :style="item.style" v-if="item.type === 'input'" :data-reg="item.reg">
           <el-input v-model="item.value" :disabled="false" @change="onChange"></el-input>
         </el-form-item>
         <!-- 选择框 -->
-        <el-form-item :style="item.style" v-if="item.type === 'select'" :class="`reg-${item.reg}`">
+        <el-form-item :style="item.style" v-if="item.type === 'select'" :data-reg="item.reg">
           <el-select v-model="item.value" :disabled="false" @change="onChange">
             <el-option
               v-for="(option, index) in item.options"
@@ -41,7 +41,7 @@
           </el-select>
         </el-form-item>
         <!-- 开关 -->
-        <el-form-item :style="item.style" v-if="item.type === 'switch'" :class="`reg-${item.reg}`">
+        <el-form-item :style="item.style" v-if="item.type === 'switch'" :data-reg="item.reg">
           <el-tag
             :disable-transitions="true"
             :effect="item.value === '0' ? 'light' : 'dark'"
