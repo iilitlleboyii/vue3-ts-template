@@ -176,6 +176,7 @@ function getRegData() {
       })
       .catch(() => {
         loading.value = false
+        reject()
       })
   })
 }
@@ -183,7 +184,9 @@ function getRegData() {
 function onRefreshCache() {
   refreshDrawReg(payload.value)
     .then(getRegData)
-    .then(ElMessage.success('刷新成功'))
+    .then(() => {
+      ElMessage.success('刷新成功')
+    })
     .catch(() => {})
 }
 
