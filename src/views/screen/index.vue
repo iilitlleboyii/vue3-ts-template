@@ -166,6 +166,22 @@ function getRegData() {
               value = formatVal.startsWith('.') ? '0' + formatVal : formatVal
             }
           }
+          if (item.type === 'select' && item.reg === 'I1375') {
+            item.options = [
+              {
+                label: '选项0',
+                value: '0'
+              },
+              {
+                label: '选项1',
+                value: '1'
+              },
+              {
+                label: '选项2',
+                value: '2'
+              }
+            ]
+          }
           return {
             ...item,
             value: value || '-'
