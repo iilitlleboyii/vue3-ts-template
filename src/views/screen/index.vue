@@ -181,6 +181,7 @@ function getRegData() {
                 value: '2'
               }
             ]
+            value = item.options[0].value
           }
           return {
             ...item,
