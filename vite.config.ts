@@ -38,6 +38,11 @@ export default defineConfig(({ mode }) => {
           target: 'http://172.16.30.45:8071',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/wcm-api/, '')
+        },
+        '/yxh-api': {
+          target: 'http://172.16.30.32:81',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/yxh-api/, '')
         }
       }
     },
@@ -54,6 +59,11 @@ export default defineConfig(({ mode }) => {
           target: 'http://172.16.30.45:8071',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/wcm-api/, '')
+        },
+        '/yxh-api': {
+          target: 'http://172.16.30.46:81',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/yxh-api/, '')
         }
       }
     },

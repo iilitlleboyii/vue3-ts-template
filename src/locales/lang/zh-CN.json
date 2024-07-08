@@ -11,7 +11,8 @@
       "log": "日志管理",
       "dataPanel": "数据大屏",
       "login": "登录",
-      "register": "注册"
+      "register": "注册",
+      "chat": "聊天框"
     },
     "tab": {
       "refresh": "刷新当前",

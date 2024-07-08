@@ -11,7 +11,8 @@
       "log": "Log",
       "dataPanel": "Data Panel",
       "login": "Login",
-      "register": "Register"
+      "register": "Register",
+      "chat": "ChatDialog"
     },
     "tab": {
       "refresh": "Refresh Current",

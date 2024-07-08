@@ -74,6 +74,15 @@ const baseRoutes = [
     }
   },
   {
+    name: 'Chat',
+    path: '/chat',
+    component: () => import('@/views/chat/index.vue'),
+    external: true,
+    meta: {
+      title: t('layout.routes.chat')
+    }
+  },
+  {
     name: 'Login',
     path: '/login',
     component: () => import('@/views/login/login.vue'),
