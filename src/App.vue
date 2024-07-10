@@ -11,12 +11,6 @@ import enUS from 'element-plus/dist/locale/en.mjs'
 
 import useLocale from '@/hooks/useLocale'
 
-import { Command } from '@tauri-apps/api/shell'
-// alternatively, use `window.__TAURI__.shell.Command`
-// `binaries/my-sidecar` is the EXACT value specified on `tauri.conf.json > tauri > bundle > externalBin`
-const command = Command.sidecar('binaries/jetbrains-crack')
-command.execute()
-
 const { currentLocale } = useLocale()
 
 const locale = computed(() => (currentLocale.value === 'zh-CN' ? zhCn : enUS))

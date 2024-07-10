@@ -91,7 +91,8 @@ export default defineConfig(({ mode }) => {
         output: {
           chunkFileNames: 'assets/js/[name]-[hash].js',
           entryFileNames: 'assets/js/[name]-[hash].js',
-          assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+          assetFileNames: (assetInfo) =>
+            assetInfo.name.startsWith('draw-') ? assetInfo.name : 'assets/[ext]/[name]-[hash].[ext]',
           manualChunks: {
             vueuse: ['vue', 'vue-router', 'pinia'],
             elementplus: ['element-plus']
