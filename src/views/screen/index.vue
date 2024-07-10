@@ -148,15 +148,27 @@ function onResetPage() {
 function getRegData() {
   return new Promise((resolve, reject) => {
     loading.value = true
+    let regList = Array.from(new Set(dynamicData.value.map((item) => item.reg)))
+    let tempRegList = Array.from(
+      new Set(
+        dynamicData.value
+          .filter((item) => item.bitWidth === '32' && !item.reg?.startsWith('D'))
+          .map((item) => incrementString(item.reg))
+      )
+    )
     payload.value = {
       sn: '229c5fb163bad606', //主机编码
-      regList: Array.from(new Set(dynamicData.value.map((item) => item.reg))) //寄存器列表
+      equipmentCode: 61961617, //设备编码
+      regList: regList.concat(tempRegList) //寄存器列表
     }
     getDrawCache(payload.value)
       .then((res) => {
         dynamicData.value = dynamicData.value.map((item) => {
           // ! toSpliced 兼容性
-          let value = res.data[item.reg]
+          let value = res.data.reg[item.reg]
+          if (item.type === 'input' && item.bitWidth === '32' && !item.reg?.startsWith('D')) {
+            value = parseInt(value) + parseInt(res.data.reg[incrementString(item.reg)] << 16) + ''
+          }
           if (item.type === 'input' && item.showFormatVal) {
             if (item.showFormatVal != '0') {
               const formatVal = value
@@ -167,21 +179,10 @@ function getRegData() {
             }
           }
           if (item.type === 'select' && item.reg === 'I1375') {
-            item.options = [
-              {
-                label: '选项0',
-                value: '0'
-              },
-              {
-                label: '选项1',
-                value: '1'
-              },
-              {
-                label: '选项2',
-                value: '2'
-              }
-            ]
-            value = item.options[0].value
+            if (Array.isArray(res.data.realTimeAlarmList) && res.data.realTimeAlarmList.length > 0) {
+              item.options = res.data.realTimeAlarmList
+              value = res.data.realTimeAlarmList[0].value
+            }
           }
           return {
             ...item,
@@ -191,7 +192,8 @@ function getRegData() {
         loading.value = false
         resolve()
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log('error', err)
         loading.value = false
         reject()
       })
@@ -319,6 +321,20 @@ fetch(new URL('@/assets/json/draw-bole.json', import.meta.url).href)
       .flat()
       .some((item) => item.width.slice(0, -2) > 768)
   })
+
+function incrementString(inputStr) {
+  const matches = inputStr.match(/(\D+)(\d*)/)
+  if (!matches) {
+    return inputStr
+  }
+
+  const prefix = matches[1]
+  const numberStr = matches[2]
+  const number = numberStr === '' ? 0 : parseInt(numberStr)
+  const newNumber = (number + 1).toString()
+
+  return prefix + newNumber.padStart(numberStr.length, '0')
+}
 </script>
 
 <style lang="scss" scoped>
