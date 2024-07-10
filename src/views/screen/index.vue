@@ -322,6 +322,14 @@ fetch(new URL('@/assets/json/draw-bole.json', import.meta.url).href)
       .some((item) => item.width.slice(0, -2) > 768)
   })
 
+/**
+ * 32位宽寄存器标识加1
+ * @param {string} inputStr
+ * @returns {string}
+ * @example
+ * // returns 'R1235'
+ * incrementString('R1234')
+ */
 function incrementString(inputStr) {
   const matches = inputStr.match(/(\D+)(\d*)/)
   if (!matches) {
