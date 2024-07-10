@@ -27,7 +27,8 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: true,
-      open: true,
+      open: false,
+      port: 8080,
       proxy: {
         '/dev-api': {
           target: 'http://127.0.0.1:8000',
@@ -35,7 +36,7 @@ export default defineConfig(({ mode }) => {
           rewrite: (path) => path.replace(/^\/dev-api/, '')
         },
         '/wcm-api': {
-          target: 'http://172.16.30.45:8071',
+          target: 'http://172.16.30.55:8071',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/wcm-api/, '')
         },
@@ -56,7 +57,7 @@ export default defineConfig(({ mode }) => {
           rewrite: (path) => path.replace(/^\/prod-api/, '')
         },
         '/wcm-api': {
-          target: 'http://172.16.30.45:8071',
+          target: 'http://172.16.30.55:8071',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/wcm-api/, '')
         },
