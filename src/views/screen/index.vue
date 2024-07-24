@@ -119,7 +119,7 @@ watch(
       )
       staticData.value = staticDataItems
       dynamicData.value = dynamicDataItems
-      getRegData()
+      // getRegData()
     }
   },
   {
@@ -156,10 +156,13 @@ function getRegData() {
           .map((item) => incrementString(item.reg))
       )
     )
+    let tempRegList2 = Array.from(
+      new Set(dynamicData.value.filter((item) => item.showFormatReg).map((item) => item.showFormatReg))
+    )
     payload.value = {
       sn: '229c5fb163bad606', //主机编码
       equipmentCode: 61961617, //设备编码
-      regList: regList.concat(tempRegList) //寄存器列表
+      regList: regList.concat(tempRegList, tempRegList2) //寄存器列表
     }
     getDrawCache(payload.value)
       .then((res) => {
@@ -171,17 +174,49 @@ function getRegData() {
           }
           if (item.type === 'input' && item.showFormatVal) {
             if (item.showFormatVal != '0') {
-              const formatVal = value
-                .split('')
-                .toSpliced(item.showFormatVal * -1, 0, '.')
-                .join('')
-              value = formatVal.startsWith('.') ? '0' + formatVal : formatVal
+              value = addDecimalPoint(value, item.showFormatVal)
             }
           }
           if (item.type === 'select' && item.reg === 'I1375') {
             if (Array.isArray(res.data.realTimeAlarmList) && res.data.realTimeAlarmList.length > 0) {
               item.options = res.data.realTimeAlarmList
               value = res.data.realTimeAlarmList[0].value
+            }
+          }
+          if (item.type === 'input' && item.showFormatReg) {
+            let bitNum = res.data.reg[item.showFormatReg]
+            switch (bitNum) {
+              case '0':
+                value = parseInt(value, 10)
+                break
+              case '1':
+                value = parseInt(value, 16)
+                break
+              case '2':
+              case '3':
+              case '4':
+              case '5':
+              case '6':
+              case '7':
+              case '8':
+                value = parseInt(value, 10)
+                value = addDecimalPoint(value, bitNum * 1 - 1)
+                break
+              case '100':
+                value = parseInt(value, 10)
+                break
+              case '101':
+              case '102':
+              case '103':
+              case '104':
+              case '105':
+              case '106':
+              case '107':
+                value = parseInt(value, 10)
+                value = addDecimalPoint(value, bitNum * 1 - 100)
+                break
+              default:
+                break
             }
           }
           return {
@@ -342,6 +377,14 @@ function incrementString(inputStr) {
   const newNumber = (number + 1).toString()
 
   return prefix + newNumber.padStart(numberStr.length, '0')
+}
+
+function addDecimalPoint(origin, decimal) {
+  const formatVal = origin
+    .split('')
+    .toSpliced(decimal * -1, 0, '.')
+    .join('')
+  return formatVal.startsWith('.') ? '0' + formatVal : formatVal
 }
 </script>
 
