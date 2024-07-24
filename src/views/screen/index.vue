@@ -277,6 +277,8 @@ function formatPageData(data) {
         ret.closeColor = item.closeColor
         ret.openWord = item.openWord
         ret.closeWord = item.closeWord
+        ret.openPicture = item.openPicture
+        ret.closePicture = item.closePicture
       }
       return ret
     })

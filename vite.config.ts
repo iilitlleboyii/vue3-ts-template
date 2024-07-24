@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: true,
-      open: false,
+      open: true,
       port: 8080,
       proxy: {
         '/dev-api': {

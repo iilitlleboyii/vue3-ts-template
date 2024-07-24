@@ -68,8 +68,10 @@
             :effect="item.value === '0' ? 'light' : 'dark'"
             :style="{
               '--el-tag-text-color': '#4b7299',
-              '--el-tag-bg-color': item.value === '0' ? item.closeColor : item.openColor,
-              '--el-tag-border-color': '#eceff1'
+              '--el-tag-bg-color': 'transparent',
+              '--el-tag-border-color': '#eceff1',
+              'background-image':
+                `url('data:image/png;base64,` + (item.value === '0' ? item.closePicture : item.openPicture) + `')`
             }"
             >{{ item.openWord }}</el-tag
           >
