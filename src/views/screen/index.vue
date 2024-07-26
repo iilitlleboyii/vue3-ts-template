@@ -436,6 +436,9 @@ function convertToBaseAndGetDigit(value, bitWidth, bitNum) {
   const decimalNumber = parseInt(value, 10)
   const baseString = decimalNumber.toString(2).padStart(bitWidth, '0')
   const digit = baseString.charAt(baseString.length - (bitNum + 1))
+
+  // 等价于
+  // const digit = (value & (1 << bitNum)) >>> bitNum
   return digit
 }
 </script>
