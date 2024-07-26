@@ -230,8 +230,10 @@ function getRegData() {
             }
           }
           if (item.type === 'text_csv' && item.csvName) {
-            value = res.data.reg[item.reg]
             value = tableDict.value[item.csvName][value]
+          }
+          if (item.type === 'switch' || item.type === 'lamp') {
+            value = convertToBaseAndGetDigit(value, item.bitWidth, item.bitNum)
           }
           return {
             ...item,
@@ -428,6 +430,13 @@ function addDecimalPoint(origin, decimal) {
     .toSpliced(decimal * -1, 0, '.')
     .join('')
   return formatVal.startsWith('.') ? '0' + formatVal : formatVal
+}
+
+function convertToBaseAndGetDigit(decimalString, base, position) {
+  const decimalNumber = parseInt(decimalString, 10)
+  const baseString = decimalNumber.toString(base)
+  const digit = parseInt(baseString.charAt(baseString.length - position), base)
+  return digit
 }
 </script>
 
