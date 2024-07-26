@@ -88,6 +88,8 @@ const loading = ref(true)
 
 const rawData = shallowRef([])
 
+const tableDict = shallowRef({})
+
 const pageSelector = reactive({
   pageIdx: 0,
   layerIdx: 0,
@@ -111,7 +113,7 @@ watch(
       const formatted = formatPageData(result)
       const [staticDataItems, dynamicDataItems] = formatted.reduce(
         ([staticData, dynamicData], item) => {
-          return ['input', 'select', 'switch'].includes(item.type)
+          return ['input', 'select', 'switch', 'text_csv', 'lamp'].includes(item.type)
             ? [staticData, [...dynamicData, item]]
             : [[...staticData, item], dynamicData]
         },
@@ -119,6 +121,14 @@ watch(
       )
       staticData.value = staticDataItems
       dynamicData.value = dynamicDataItems
+
+      // 待删除 测试是否可以正常渲染
+      // dynamicData.value.forEach((item) => {
+      //   if (item.type === 'text_csv' && item.csvName) {
+      //     item.value = tableDict.value[item.csvName][item.value * 1 + 1 + '']
+      //   }
+      // })
+
       // getRegData()
     }
   },
@@ -148,7 +158,7 @@ function onResetPage() {
 function getRegData() {
   return new Promise((resolve, reject) => {
     loading.value = true
-    let regList = Array.from(new Set(dynamicData.value.map((item) => item.reg)))
+    let regList = Array.from(new Set(dynamicData.value.filter((item) => item.reg).map((item) => item.reg)))
     let tempRegList = Array.from(
       new Set(
         dynamicData.value
@@ -157,7 +167,7 @@ function getRegData() {
       )
     )
     let tempRegList2 = Array.from(
-      new Set(dynamicData.value.filter((item) => item.showFormatReg).map((item) => item.showFormatReg))
+      new Set(dynamicData.value.filter((item) => item.showFormatReg && item.reg).map((item) => item.showFormatReg))
     )
     payload.value = {
       sn: '229c5fb163bad606', //主机编码
@@ -219,6 +229,10 @@ function getRegData() {
                 break
             }
           }
+          if (item.type === 'text_csv' && item.csvName) {
+            value = res.data.reg[item.reg]
+            value = tableDict.value[item.csvName][value]
+          }
           return {
             ...item,
             value: value || '-'
@@ -263,11 +277,29 @@ function formatPageData(data) {
         ret.reg = item.reg
         ret.bitWidth = item.bitWidth
         ret.showFormatVal = item.showFormatVal
+        ret.showFormatReg = item.showFormatReg
       } else if (item.type === 'select') {
         ret.reg = item.reg
         ret.bitWidth = item.bitWidth
         ret.options = item.selectList
       } else if (item.type === 'switch') {
+        ret.reg = item.reg
+        ret.bitWidth = item.bitWidth
+        ret.bitNum = item.bitNum
+        ret.open = item.open
+        ret.close = item.close
+        ret.openColor = item.openColor
+        ret.closeColor = item.closeColor
+        ret.openWord = item.openWord
+        ret.closeWord = item.closeWord
+        ret.openPicture = item.openPicture
+        ret.closePicture = item.closePicture
+      } else if (item.type === 'text_csv') {
+        ret.reg = item.reg
+        ret.bitWidth = item.bitWidth
+        ret.showFormatVal = item.showFormatVal
+        ret.csvName = item.csvName
+      } else if (item.type === 'lamp') {
         ret.reg = item.reg
         ret.bitWidth = item.bitWidth
         ret.bitNum = item.bitNum
@@ -329,12 +361,21 @@ function getAllReg() {
     const layer = current?.layer[0]
     const result = layer ? [...common, ...layer] : common
     const formatted = formatPageData(result)
-    const dynamicData = formatted.filter((item) => ['input', 'select', 'switch'].includes(item.type))
+    const dynamicData = formatted.filter((item) =>
+      ['input', 'select', 'switch', 'text_csv', 'lamp'].includes(item.type)
+    )
     resArr = resArr.concat(dynamicData.map((item) => item.reg))
   }
   resArr = Array.from(new Set(resArr))
   console.log('@resArr 🚀🚀🚀~ ', resArr)
 }
+
+fetch(new URL('@/assets/json/merged_output.json', import.meta.url).href)
+  .then((res) => res.json())
+  .then((data) => {
+    tableDict.value = data
+    console.log('@tableDict 🚀🚀🚀~ ', tableDict.value)
+  })
 
 fetch(new URL('@/assets/json/draw-bole.json', import.meta.url).href)
   .then((res) => res.json())
@@ -382,7 +423,7 @@ function incrementString(inputStr) {
 }
 
 function addDecimalPoint(origin, decimal) {
-  const formatVal = origin
+  const formatVal = (origin + '')
     .split('')
     .toSpliced(decimal * -1, 0, '.')
     .join('')

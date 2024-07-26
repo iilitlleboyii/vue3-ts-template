@@ -36,6 +36,17 @@
         >
           <el-input v-model="item.value" :disabled="false" @change="onChange"></el-input>
         </el-form-item>
+        <!-- 输入框-表格（不可编辑） -->
+        <el-form-item
+          :style="item.style"
+          v-if="item.type === 'text_csv'"
+          :class="{
+            'debug-ele': debug
+          }"
+          :data-reg="item.reg"
+        >
+          <el-input v-model="item.value" :readonly="true"></el-input>
+        </el-form-item>
         <!-- 选择框 -->
         <el-form-item
           :style="item.style"
@@ -65,15 +76,47 @@
         >
           <el-tag
             :disable-transitions="true"
-            :effect="item.value === '0' ? 'light' : 'dark'"
+            :effect="item.value == item.close ? 'light' : 'dark'"
             :style="{
               '--el-tag-text-color': '#4b7299',
               '--el-tag-bg-color': 'transparent',
               '--el-tag-border-color': '#eceff1',
               'background-image':
-                `url('data:image/png;base64,` + (item.value === '0' ? item.closePicture : item.openPicture) + `')`
+                `url('data:image/png;base64,` + (item.value == item.close ? item.closePicture : item.openPicture) + `')`
             }"
-            >{{ item.openWord }}</el-tag
+            >{{ item.value == item.close ? item.closeWord : item.openWord }}</el-tag
+          >
+          <!-- <el-switch
+            v-model="item.value"
+            :disabled="false"
+            :active-text="item.openWord"
+            :inactive-text="item.closeWord"
+            :style="{
+              '--el-switch-on-color': item.openColor,
+              '--el-switch-off-color': item.closeColor
+            }"
+          /> -->
+        </el-form-item>
+        <!-- 灯 -->
+        <el-form-item
+          :style="item.style"
+          v-if="item.type === 'lamp'"
+          :class="{
+            'debug-ele': debug
+          }"
+          :data-reg="item.reg"
+        >
+          <el-tag
+            :disable-transitions="true"
+            :effect="item.value == item.close ? 'light' : 'dark'"
+            :style="{
+              '--el-tag-text-color': '#4b7299',
+              '--el-tag-bg-color': 'transparent',
+              '--el-tag-border-color': '#eceff1',
+              'background-image':
+                `url('data:image/png;base64,` + (item.value == item.close ? item.closePicture : item.openPicture) + `')`
+            }"
+            >{{ item.value == item.close ? item.closeWord : item.openWord }}</el-tag
           >
           <!-- <el-switch
             v-model="item.value"
