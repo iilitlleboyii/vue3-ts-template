@@ -199,6 +199,8 @@ function onChange() {
   :deep(.el-tag) {
     width: 100%;
     height: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
   }
 
   :deep(.el-text) {

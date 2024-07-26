@@ -237,7 +237,7 @@ function getRegData() {
           }
           return {
             ...item,
-            value: value || '-'
+            value: value ?? '-'
           }
         })
         loading.value = false
@@ -434,8 +434,8 @@ function addDecimalPoint(origin, decimal) {
 
 function convertToBaseAndGetDigit(value, bitWidth, bitNum) {
   const decimalNumber = parseInt(value, 10)
-  const baseString = decimalNumber.toString(2).padStart(bitWidth, '0')
-  const digit = baseString.charAt(baseString.length - (bitNum + 1))
+  const baseString = decimalNumber.toString(2).padStart(bitWidth * 1, '0')
+  const digit = baseString.charAt(baseString.length - (bitNum * 1 + 1))
 
   // 等价于
   // const digit = (value & (1 << bitNum)) >>> bitNum
