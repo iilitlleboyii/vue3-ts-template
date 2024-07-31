@@ -102,6 +102,8 @@ const dynamicData = ref([])
 
 const payload = ref(null)
 
+const filteredReg = ['SR0108']
+
 watch(
   [pages, pageIdx, layerIdx],
   () => {
@@ -172,10 +174,15 @@ function getRegData() {
     payload.value = {
       sn: '229c5fb163bad606', //主机编码
       equipmentCode: 61961617, //设备编码
-      regList: regList.concat(tempRegList, tempRegList2) //寄存器列表
+      regList: regList.concat(tempRegList, tempRegList2).filter((item) => !filteredReg.includes(item)) //寄存器列表
     }
     getDrawCache(payload.value)
       .then((res) => {
+        const diffReg = payload.value.regList.filter((item) => res.data.reg[item] === undefined)
+        if (diffReg.length > 0) {
+          console.log(`有这些寄存器没有返回数据：${diffReg.join(',')}`)
+        }
+
         dynamicData.value = dynamicData.value.map((item) => {
           // ! toSpliced 兼容性
           let value = res.data.reg[item.reg]
