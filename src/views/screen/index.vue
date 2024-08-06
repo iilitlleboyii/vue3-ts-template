@@ -100,6 +100,8 @@ const { pageIdx, layerIdx, pages } = toRefs(pageSelector)
 const staticData = shallowRef([])
 const dynamicData = ref([])
 
+const dynamicTypes = ['input', 'select', 'switch', 'text_csv', 'lamp', 'text']
+
 const payload = ref(null)
 
 const filteredReg = ['SR0108']
@@ -115,7 +117,7 @@ watch(
       const formatted = formatPageData(result)
       const [staticDataItems, dynamicDataItems] = formatted.reduce(
         ([staticData, dynamicData], item) => {
-          return ['input', 'select', 'switch', 'text_csv', 'lamp'].includes(item.type)
+          return dynamicTypes.includes(item.type)
             ? [staticData, [...dynamicData, item]]
             : [[...staticData, item], dynamicData]
         },
@@ -123,13 +125,6 @@ watch(
       )
       staticData.value = staticDataItems
       dynamicData.value = dynamicDataItems
-
-      // 待删除 测试是否可以正常渲染
-      // dynamicData.value.forEach((item) => {
-      //   if (item.type === 'text_csv' && item.csvName) {
-      //     item.value = tableDict.value[item.csvName][item.value * 1 + 1 + '']
-      //   }
-      // })
 
       // getRegData()
     }
@@ -242,6 +237,9 @@ function getRegData() {
           if (item.type === 'switch' || item.type === 'lamp') {
             value = convertToBaseAndGetDigit(value, item.bitWidth, item.bitNum)
           }
+          if (item.type === 'text') {
+            value = numsToChars(value, item.charNumber)
+          }
           return {
             ...item,
             value: value ?? '-'
@@ -320,6 +318,9 @@ function formatPageData(data) {
         ret.closeWord = item.closeWord
         ret.openPicture = item.openPicture
         ret.closePicture = item.closePicture
+      } else if (item.type === 'text') {
+        ret.reg = item.reg
+        ret.charNumber = item.charNumber
       }
       return ret
     })
@@ -370,9 +371,7 @@ function getAllReg() {
     const layer = current?.layer[0]
     const result = layer ? [...common, ...layer] : common
     const formatted = formatPageData(result)
-    const dynamicData = formatted.filter((item) =>
-      ['input', 'select', 'switch', 'text_csv', 'lamp'].includes(item.type)
-    )
+    const dynamicData = formatted.filter((item) => dynamicTypes.includes(item.type))
     resArr = resArr.concat(dynamicData.map((item) => item.reg))
   }
   resArr = Array.from(new Set(resArr))
@@ -440,13 +439,46 @@ function addDecimalPoint(origin, decimal) {
 }
 
 function convertToBaseAndGetDigit(value, bitWidth, bitNum) {
-  const decimalNumber = parseInt(value, 10)
-  const baseString = decimalNumber.toString(2).padStart(bitWidth * 1, '0')
-  const digit = baseString.charAt(baseString.length - (bitNum * 1 + 1))
+  // const decimalNumber = parseInt(value, 10)
+  // const baseString = decimalNumber.toString(2).padStart(bitWidth * 1, '0')
+  // const digit = baseString.charAt(baseString.length - (bitNum * 1 + 1))
 
   // 等价于
-  // const digit = (value & (1 << bitNum)) >>> bitNum
+  const digit = (value & (1 << bitNum)) >>> bitNum
   return digit
+}
+
+function numsToChars(value, charNumber) {
+  if (!value || !Array.isArray(value) || typeof value !== 'object' || !charNumber) return
+  return hexStr2Str(
+    Object.values(value)
+      .filter((v) => v && v !== '0')
+      .map((v) => num2HexSmall(parseInt(v), parseInt(charNumber)))
+      .join('')
+  )
+}
+
+function num2HexSmall(num, byteSize) {
+  const hexStr = parseInt(num, 10)
+    .toString(16)
+    .padStart(byteSize * 2, '0')
+  let result = ''
+  for (let i = byteSize - 1; i >= 0; i--) {
+    result += hexStr.substring(i * 2, i * 2 + 2)
+  }
+  return result.toUpperCase()
+}
+function hexStr2Str(hexStr) {
+  hexStr = String(hexStr).trim()
+  if (!hexStr) return
+  const charArr = hexStr.split('')
+  const bytes = new Uint8Array(hexStr.length / 2)
+  for (let i = 0; i < bytes.length; i++) {
+    const position = i * 2
+    const n = parseInt(charArr[position], 16) * 16 + parseInt(charArr[position + 1], 16)
+    bytes[i] = n & 0xff
+  }
+  return String.fromCharCode.apply(null, bytes)
 }
 </script>
 
