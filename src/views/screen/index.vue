@@ -449,7 +449,7 @@ function convertToBaseAndGetDigit(value, bitWidth, bitNum) {
 }
 
 function numsToChars(value, charNumber) {
-  if (!value || !Array.isArray(value) || typeof value !== 'object' || !charNumber) return
+  if (!value || Array.isArray(value) || typeof value !== 'object' || !charNumber) return
   return hexStr2Str(
     Object.values(value)
       .filter((v) => v && v !== '0')
