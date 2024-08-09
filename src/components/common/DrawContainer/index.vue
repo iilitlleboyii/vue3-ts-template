@@ -130,7 +130,14 @@
           /> -->
         </el-form-item>
         <!-- 动态文字 -->
-        <el-form-item :style="item.style" v-if="item.type === 'text'">
+        <el-form-item
+          :style="item.style"
+          v-if="item.type === 'text'"
+          :class="{
+            'debug-ele': debug
+          }"
+          :data-reg="item.reg"
+        >
           <el-text>{{ item.value }}</el-text>
         </el-form-item>
       </template>
